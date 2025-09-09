@@ -11,9 +11,8 @@ src/
 │   │   │   │   ├── UserAge.ts
 │   │   │   │   └── UserIsValid.ts
 │   │   │   ├── interfaces/
-│   │   │   │   ├── IUser.ts
-│   │   │   │   ├── IUserPrimitives.ts
-│   │   │   │   └── IUserFactory.ts
+│   │   │   │   └── DtoGenerator.ts
+│   │   │   ├── UserDtoGenerator.ts
 │   │   │   ├── User.ts
 │   │   │   └── UserDto.ts
 │   │   ├── book/
@@ -50,4 +49,4 @@ Propuesta Diagrama:
 ![alt text](src/img/propuesta_diagrama.jpeg)
 
 Propuesta Solucion a Dependencia Circular:
-![alt text](src/img/solucion_dependencia_circular.png)
+![alt text](src/img/solucion_dependencia_circular.jpg)
