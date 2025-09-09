@@ -4,6 +4,7 @@ import { UserDpi } from './value-objects/UserDpi';
 import { UserName } from './value-objects/UserName';
 import { UserAge } from './value-objects/UserAge';
 import { UserIsValid } from './value-objects/UserIsValid';
+import { UserPhone } from './value-objects/UserPhone'; 
 
 export class User {
   constructor(
@@ -12,7 +13,8 @@ export class User {
     private readonly dpi: UserDpi,
     private readonly name: UserName,
     private readonly age: UserAge,
-    private readonly isValid: UserIsValid
+    private readonly isValid: UserIsValid,
+    private readonly phone: UserPhone 
   ) {}
 
   public getId(): string {
@@ -39,19 +41,28 @@ export class User {
     return this.isValid.toBoolean();
   }
 
+  public getPhone(): string { 
+    return this.phone.toString();
+  }
+
   public activate(): User {
     const newIsValid = UserIsValid.create(true);
-    return new User(this.id, this.email, this.dpi, this.name, this.age, newIsValid);
+    return new User(this.id, this.email, this.dpi, this.name, this.age, newIsValid, this.phone);
   }
 
   public deactivate(): User {
     const newIsValid = UserIsValid.create(false);
-    return new User(this.id, this.email, this.dpi, this.name, this.age, newIsValid);
+    return new User(this.id, this.email, this.dpi, this.name, this.age, newIsValid, this.phone);
   }
 
   public updateEmail(newEmail: string): User {
     const email = UserEmail.create(newEmail);
-    return new User(this.id, email, this.dpi, this.name, this.age, this.isValid);
+    return new User(this.id, email, this.dpi, this.name, this.age, this.isValid, this.phone);
+  }
+
+  public updatePhone(newPhone: string): User { 
+    const phone = UserPhone.create(newPhone);
+    return new User(this.id, this.email, this.dpi, this.name, this.age, this.isValid, phone);
   }
 
   public equals(other: User): boolean {
@@ -64,6 +75,7 @@ export class User {
     name: string;
     age: number;
     isValid: boolean;
+    phone: string; 
   }): User {
     const id = UserId.create(User.generateId());
     const email = UserEmail.create(params.email);
@@ -71,8 +83,9 @@ export class User {
     const name = UserName.create(params.name);
     const age = UserAge.create(params.age);
     const isValid = UserIsValid.create(params.isValid);
+    const phone = UserPhone.create(params.phone); 
 
-    return new User(id, email, dpi, name, age, isValid);
+    return new User(id, email, dpi, name, age, isValid, phone);
   }
 
   private static generateId(): string {

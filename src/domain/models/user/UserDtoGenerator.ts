@@ -11,7 +11,8 @@ export class UserDtoGenerator implements DtoGenerator<User, UserDto> {
       user.getDpi(),
       user.getName(),
       user.getAge(),
-      user.getIsValid()
+      user.getIsValid(),
+      user.getPhone() 
     );
   }
 
@@ -22,6 +23,7 @@ export class UserDtoGenerator implements DtoGenerator<User, UserDto> {
     const UserName = require('./value-objects/UserName').UserName;
     const UserAge = require('./value-objects/UserAge').UserAge;
     const UserIsValid = require('./value-objects/UserIsValid').UserIsValid;
+    const UserPhone = require('./value-objects/UserPhone').UserPhone; 
 
     const id = new UserId(primitives.id);
     const email = new UserEmail(primitives.email);
@@ -29,8 +31,9 @@ export class UserDtoGenerator implements DtoGenerator<User, UserDto> {
     const name = new UserName(primitives.name);
     const age = new UserAge(primitives.age);
     const isValid = new UserIsValid(primitives.isValid);
+    const phone = new UserPhone(primitives.phone); 
 
-    return new User(id, email, dpi, name, age, isValid);
+    return new User(id, email, dpi, name, age, isValid, phone);
   }
 
   public static toDto(user: User): UserDto {
@@ -40,7 +43,8 @@ export class UserDtoGenerator implements DtoGenerator<User, UserDto> {
       user.getDpi(),
       user.getName(),
       user.getAge(),
-      user.getIsValid()
+      user.getIsValid(),
+      user.getPhone() 
     );
   }
 
@@ -51,14 +55,15 @@ export class UserDtoGenerator implements DtoGenerator<User, UserDto> {
     const UserName = require('./value-objects/UserName').UserName;
     const UserAge = require('./value-objects/UserAge').UserAge;
     const UserIsValid = require('./value-objects/UserIsValid').UserIsValid;
-
+    const UserPhone = require('./value-objects/UserPhone').UserPhone; 
     const id = new UserId(dto.id);
     const email = new UserEmail(dto.email);
     const dpi = new UserDpi(dto.dpi);
     const name = new UserName(dto.name);
     const age = new UserAge(dto.age);
     const isValid = new UserIsValid(dto.isValid);
+    const phone = new UserPhone(dto.phone); // Nuevo VO
 
-    return new User(id, email, dpi, name, age, isValid);
+    return new User(id, email, dpi, name, age, isValid, phone);
   }
 }
