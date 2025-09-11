@@ -20,24 +20,4 @@ export class UserDto {
       phone: this.phone 
     });
   }
-
-  public static fromObject(obj: {
-    id: string;
-    email: string;
-    dpi: string;
-    name: string;
-    age: number;
-    isValid: boolean;
-    phone: string; 
-  }): UserDto {
-    return new UserDto(
-      obj.id,
-      obj.email,
-      obj.dpi,
-      obj.name,
-      obj.age,
-      obj.isValid,
-      obj.phone
-    );
-  }
 }
