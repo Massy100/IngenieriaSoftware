@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 
-// Import User
-// Import UserDto
-// Import DtoGenerator
+import { User } from "@/domain/models/user/User";
+import { UserDto } from "@/domain/models/user/UserDto";
+import { UserDtoGenerator } from "@/domain/models/user/UserDtoGenerator";
 
 // Import Repository
 // Import UserValidator
@@ -18,15 +18,17 @@ export async function POST(request: NextRequest) {
     try {
         const data = await request.json();
 
-        const userDto = UserDto(
+        const userDto = new UserDto(
             data.id, 
-            data.email, 
+            data.email,
+            data.dpi, 
             data.name, 
             data.age,
-            false
+            false,
+            data.phone
         );
 
-        const user = DtoGenerator.fromPrimitive(userDto);
+        const user = UserDtoGenerator.fromPrimitive(userDto);
 
         await userCreator.run(user);
         
