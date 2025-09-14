@@ -8,6 +8,8 @@ import SupabaseUserRepository from "@/domain/models/repositories/SupabaseUserRep
 import { UserValidator } from "@/domain/models/services/UserValidator";
 import { UserFinder } from "@/domain/models/services/UserFinder";
 
+import { BookSearcher } from "@/domain/models/book/BookSearcher";
+
 // Import EmailService
 // Import WhatsappService
 
@@ -37,6 +39,34 @@ export async function POST(request: NextRequest) {
         console.error('Error sending notification:', error);
         return NextResponse.json({
             message: 'Error sending notification',
+            error: error instanceof Error ? error.message : 'Unknown error'
+        }, { status: 500 });
+    }
+}
+
+export async function GET(request: NextRequest) {
+    try {
+        const data = await request.json();
+        
+        const user = data.email ? await userFinder.run(data.email): null;
+        
+        if (!user) throw new Error('Email not registered');
+
+        if  (user.getIsValid()) {
+            const bookSearcher = new BookSearcher();
+            const books = await bookSearcher.run();
+
+            return NextResponse.json({
+                message: 'User is valid',
+                books: books
+            });
+        } else {
+            throw new Error('User is not valid');
+        }
+    } catch (error) {
+        console.error('Error validating user:', error);
+        return NextResponse.json({
+            message: 'Error validating user',
             error: error instanceof Error ? error.message : 'Unknown error'
         }, { status: 500 });
     }
