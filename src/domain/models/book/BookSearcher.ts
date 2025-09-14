@@ -1,6 +1,6 @@
 import { Book } from "./book";
 import { BookRepository } from "./interfaces/BookRepository";
-import { UserFinder } from "../user/"; //No encontre el UserFinder, creo que no existe jaja
+import { UserFinder } from "../services/UserFinder";
 
 export class BookSearcher {
   constructor(
