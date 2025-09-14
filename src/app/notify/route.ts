@@ -8,6 +8,7 @@ import SupabaseUserRepository from "@/domain/models/repositories/SupabaseUserRep
 import { UserValidator } from "@/domain/models/services/UserValidator";
 import { UserFinder } from "@/domain/models/services/UserFinder";
 
+import { InMemoryBookRepository } from "@/infrastructure/repositories/book/InMemoryBookRepository";
 import { BookSearcher } from "@/domain/models/book/BookSearcher";
 
 // Import EmailService
@@ -47,14 +48,14 @@ export async function POST(request: NextRequest) {
 export async function GET(request: NextRequest) {
     try {
         const data = await request.json();
-        
         const user = data.email ? await userFinder.run(data.email): null;
         
         if (!user) throw new Error('Email not registered');
 
         if  (user.getIsValid()) {
-            const bookSearcher = new BookSearcher();
-            const books = await bookSearcher.run();
+            const bookRepository = new InMemoryBookRepository();
+            const bookSearcher = new BookSearcher(bookRepository, userFinder);
+            const books = await bookSearcher.run(user.getEmail());
 
             return NextResponse.json({
                 message: 'User is valid',
