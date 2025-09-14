@@ -4,15 +4,14 @@ import { User } from "@/domain/models/user/User";
 import { UserDto } from "@/domain/models/user/UserDto";
 import { UserDtoGenerator } from "@/domain/models/user/UserDtoGenerator";
 
-// Import Repository
-// Import UserValidator
-
-// Import UserFinder
+import SupabaseUserRepository from "@/domain/models/repositories/SupabaseUserRepository";
+import { UserValidator } from "@/domain/models/services/UserValidator";
+import { UserFinder } from "@/domain/models/services/UserFinder";
 
 // Import EmailService
 // Import WhatsappService
 
-const userRepository = new UserRepository();
+const userRepository = new SupabaseUserRepository();
 const userFinder = new UserFinder(userRepository);
 
 export async function POST(request: NextRequest) {

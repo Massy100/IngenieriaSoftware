@@ -4,13 +4,13 @@ import { User } from "@/domain/models/user/User";
 import { UserDto } from "@/domain/models/user/UserDto";
 import { UserDtoGenerator } from "@/domain/models/user/UserDtoGenerator";
 
-// Import Repository
-// Import UserValidator
+import SupabaseUserRepository from "@/domain/models/repositories/SupabaseUserRepository";
 
-// Import UserCreator
-// Import UserFinder
+import { UserCreator } from "@/domain/models/services/UserCreator";
+import { UserFinder } from "@/domain/models/services/UserFinder";
+import { UserValidator } from "@/domain/models/services/UserValidator";
 
-const userRepository = new UserRepository();
+const userRepository = new SupabaseUserRepository();
 const userCreator = new UserCreator(userRepository);
 const userFinder = new UserFinder(userRepository);
 
@@ -28,7 +28,7 @@ export async function POST(request: NextRequest) {
             data.phone
         );
 
-        const user = UserDtoGenerator.fromPrimitive(userDto);
+        const user = UserDtoGenerator.fromPrimitives(userDto);
 
         await userCreator.run(user);
         
