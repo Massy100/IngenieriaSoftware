@@ -15,6 +15,7 @@ export class UserValidator {
             throw new Error('Email not registered');
         }
         if (isValid) {
+            this.userRepository.update(user.getId(), undefined, undefined, undefined, undefined, true);
             await this.sender.send(user);
         } else {
             throw new Error('User is not valid');
