@@ -68,6 +68,27 @@ export default class SupabaseUserRepository implements UserRepository {
         }
     }
 
+    async getByEmail(email: string): Promise<User> {
+        try {
+            const result = await this.sql`SELECT * FROM users WHERE email = ${email}`;
+            if (result.length) {
+                return new User(
+                    UserId.create(result[0].id),
+                    UserEmail.create(result[0].email),
+                    UserDpi.create(result[0].dpi),
+                    UserName.create(result[0].name),
+                    UserAge.create(result[0].age),
+                    UserIsValid.create(result[0].is_valid),
+                    UserPhone.create(result[0].phone)
+                );
+            }
+            throw new Error('User not found');
+        } catch (error) {
+            console.error(error);
+            throw new Error('Failed to retrieve users');
+        }
+    }
+
     async update(id: any, email?: string, dpi?: string, name?: string, age?: number, is_valid?: boolean, phone?: string): Promise<void> {
         try {
             const user = await this.getById(id);

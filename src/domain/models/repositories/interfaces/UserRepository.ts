@@ -6,8 +6,10 @@ export default interface UserRepository {
 
     getById(id: any): Promise<User | null>;
 
+    getByEmail(email: string): Promise<User | null>;
+
     update(id:any, email?:string, dpi?:string, name?:string, age?:number, is_valid?:boolean, phone?:string): Promise<void>;
 
-    dzelete(id: any): Promise<void>;
+    delete(id: any): Promise<void>;
 
 }
