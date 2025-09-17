@@ -5,7 +5,8 @@ export class UserDto {
     public readonly dpi: string,
     public readonly name: string,
     public readonly age: number,
-    public readonly isValid: boolean
+    //public readonly isValid: boolean,
+    //public readonly phone?: string
   ) {}
 
   public toJSON(): string {
