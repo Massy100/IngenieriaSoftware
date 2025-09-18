@@ -5,7 +5,7 @@ export class UserDtoGenerator {
   
   public static toPrimitives(user: User): UserDto {
     return new UserDto(
-      user.getId(),
+      user.getId(),     
       user.getEmail(),
       user.getDpi(),
       user.getName(),
@@ -17,6 +17,7 @@ export class UserDtoGenerator {
 
   public static fromPrimitives(primitives: UserDto): User {
     return User.create({
+      id: primitives.id,     
       email: primitives.email,
       dpi: primitives.dpi,
       name: primitives.name,

@@ -1,10 +1,15 @@
 import UserRepository from "../repositories/interfaces/UserRepository";
 import { UserFinder } from "./UserFinder";
-// Import NotificationSender
+import { NotificationSender } from "./NotificationSender"; 
+import { User } from "../user/User";
 
 export class UserValidator {
     private userFinder: UserFinder;
-    constructor(private userRepository: UserRepository, private sender: NotificationSender) {
+    
+    constructor(
+        private userRepository: UserRepository, 
+        private sender: NotificationSender 
+    ) {
         this.userFinder = new UserFinder(userRepository);
     }
 
@@ -14,8 +19,16 @@ export class UserValidator {
         if (!user) {
             throw new Error('Email not registered');
         }
+        
         if (isValid) {
-            this.userRepository.update(user.getId(), undefined, undefined, undefined, undefined, true);
+            this.userRepository.update(
+                user.getId(), 
+                undefined, 
+                undefined, 
+                undefined, 
+                undefined, 
+                true
+            );
             await this.sender.send(user);
         } else {
             throw new Error('User is not valid');

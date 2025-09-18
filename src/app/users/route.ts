@@ -46,13 +46,24 @@ export async function POST(request: NextRequest) {
     }
 }
 
-export async function GET(request: NextRequest) {
+export async function GET(request: Request) {
     try {
-        const data = await request.json();
+        const { searchParams } = new URL(request.url);
+        const email = searchParams.get('email');
         
-        const user = data.email ? await userFinder.run(data.email): null;
+        if (!email) {
+            return NextResponse.json({
+                message: 'Email parameter is required'
+            }, { status: 400 });
+        }
 
-        if (!user) throw new Error('Email not registered');
+        const user = await userFinder.run(email);
+
+        if (!user) {
+            return NextResponse.json({
+                message: 'Email not registered'
+            }, { status: 404 });
+        }
 
         return NextResponse.json(user);
     } catch (error) {

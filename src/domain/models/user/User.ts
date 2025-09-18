@@ -17,8 +17,8 @@ export class User {
     private readonly phone: UserPhone 
   ) {}
 
-  public getId(): string {
-    return this.id.toString();
+  public getId(): number {
+    return this.id.toNumber();
   }
 
   public getEmail(): string {
@@ -66,10 +66,11 @@ export class User {
   }
 
   public equals(other: User): boolean {
-    return this.id.toString() === other.getId();
+    return this.id.toNumber() === other.getId();
   }
 
   public static create(params: {
+    id: number; 
     email: string;
     dpi: string;
     name: string;
@@ -77,18 +78,14 @@ export class User {
     isValid: boolean;
     phone: string; 
   }): User {
-    const id = UserId.create(User.generateId());
+    const id = UserId.create(params.id); 
     const email = UserEmail.create(params.email);
     const dpi = UserDpi.create(params.dpi);
     const name = UserName.create(params.name);
     const age = UserAge.create(params.age);
     const isValid = UserIsValid.create(params.isValid);
-    const phone = UserPhone.create(params.phone); 
+    const phone = UserPhone.create(params.phone);
 
     return new User(id, email, dpi, name, age, isValid, phone);
-  }
-
-  private static generateId(): string {
-    return `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
   }
 }

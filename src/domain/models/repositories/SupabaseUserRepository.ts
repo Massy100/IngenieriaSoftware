@@ -2,7 +2,7 @@ import { Sql } from 'postgres';
 import postgres from 'postgres';
 import { User } from '../user/User';
 import UserRepository from './interfaces/UserRepository';
-
+import { createClient } from '@supabase/supabase-js';
 import { UserId } from '../user/value-objects/UserId';
 import { UserEmail } from '../user/value-objects/UserEmail';
 import { UserDpi } from '../user/value-objects/UserDpi';
@@ -13,19 +13,59 @@ import { UserPhone } from '../user/value-objects/UserPhone';
 
 export default class SupabaseUserRepository implements UserRepository {
     private readonly sql: Sql;
+    private client;
 
     constructor() {
-        // Use your Supabase database connection string here
-        const connectionString = "postgresql://postgres:[eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InljdXFqd29yZHlxanh4Y3psbHpoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ0MDc1MjQsImV4cCI6MjA2OTk4MzUyNH0.syfe2cOTubLdXC3pBUvdyTGTW1CmQ9tkbtZ6JojTpjg]@db.ycuqjwordyqjxxczllzh.supabase.co:5432/postgres";
+        const supabaseUrl = process.env.SUPABASE_URL;
+        const supabaseAnonKey = process.env.SUPABASE_ANON_KEY;
+        const connectionString = process.env.DATABASE_URL;
+
+        if (!supabaseUrl || !supabaseAnonKey || !connectionString) {
+            throw new Error('Faltan variables de entorno requeridas');
+        }
+        
         this.sql = postgres(connectionString);
+        this.client = createClient(supabaseUrl, supabaseAnonKey);
     }
 
     async save(user: User): Promise<void> {
+        console.log('💾 Intentando guardar usuario en Supabase...');
+        
         try {
-            await this.sql`INSERT INTO users (email, dpi, name, age, is_valid, phone) VALUES (${user.getEmail()}, ${user.getDpi()}, ${user.getName()}, ${user.getAge()}, ${user.getIsValid()}, ${user.getPhone()});`;
+            const userData = {
+                id: user.getId(),          
+                email: user.getEmail(),    
+                dpi: user.getDpi(),       
+                name: user.getName(),      
+                age: user.getAge(),        
+                isValid: user.getIsValid(), 
+                phone: user.getPhone()       
+            };
+
+            console.log('📦 Datos a insertar:', userData);
+
+            const { data, error } = await this.client
+                .from('users')
+                .insert([userData]);
+
+            console.log('✅ Respuesta de Supabase - data:', data);
+            
+            if (error) {
+                console.error('❌ Error de Supabase:', error);
+                console.error('📋 Detalles del error:', {
+                    code: error.code,
+                    message: error.message,
+                    details: error.details,
+                    hint: error.hint
+                });
+                throw new Error(`Failed to save user: ${error.message}`);
+            }
+
+            console.log('🎉 Usuario guardado exitosamente en Supabase');
+
         } catch (error) {
-            console.error(error)
-            throw new Error('Failed to save user')
+            console.error('💥 Error completo en save():', error);
+            throw new Error('Failed to save user');
         }
     }
 
@@ -38,8 +78,8 @@ export default class SupabaseUserRepository implements UserRepository {
                 UserDpi.create(row.dpi),
                 UserName.create(row.name),
                 UserAge.create(row.age),
-                UserIsValid.create(row.is_valid),
-                UserPhone.create(row.phone)
+                UserIsValid.create(row.isValid),
+                UserPhone.create(row.phone),
             ));
         } catch (error) {
             console.error(error);
@@ -57,7 +97,7 @@ export default class SupabaseUserRepository implements UserRepository {
                     UserDpi.create(result[0].dpi),
                     UserName.create(result[0].name),
                     UserAge.create(result[0].age),
-                    UserIsValid.create(result[0].is_valid),
+                    UserIsValid.create(result[0].isValid),
                     UserPhone.create(result[0].phone)
                 );
             }
@@ -78,7 +118,7 @@ export default class SupabaseUserRepository implements UserRepository {
                     UserDpi.create(result[0].dpi),
                     UserName.create(result[0].name),
                     UserAge.create(result[0].age),
-                    UserIsValid.create(result[0].is_valid),
+                    UserIsValid.create(result[0].isValid),
                     UserPhone.create(result[0].phone)
                 );
             }

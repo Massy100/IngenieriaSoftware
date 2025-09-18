@@ -1,6 +1,6 @@
 export class UserDto {
   constructor(
-    public readonly id: string,
+    public readonly id: number,
     public readonly email: string,
     public readonly dpi: string,
     public readonly name: string,

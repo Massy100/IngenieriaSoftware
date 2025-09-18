@@ -11,8 +11,8 @@ import { UserFinder } from "@/domain/models/services/UserFinder";
 import { InMemoryBookRepository } from "@/infrastructure/repositories/book/InMemoryBookRepository";
 import { BookSearcher } from "@/domain/models/book/BookSearcher";
 
-// Import EmailService
-// Import WhatsappService
+import { EmailNotificationSender } from "@/domain/models/notification/EmailNotificationSender";
+import { WhatsappNotificationSender } from "@/domain/models/notification/WhatsAppNotificationSender";
 
 const userRepository = new SupabaseUserRepository();
 const userFinder = new UserFinder(userRepository);
@@ -27,14 +27,14 @@ export async function POST(request: NextRequest) {
         if (!user) throw new Error('Email not registered');
 
         if (data.wa) {
-            const notificationSender = new WhatsappService();
+            await WhatsappNotificationSender.send(user); 
         } else {
-            const notificationSender = new EmailService();
+            await EmailNotificationSender.send(user);
         }
 
-        await notificationSender.send(user);
         return NextResponse.json({
             message: 'Notification sent successfully',
+            channel: data.wa ? 'whatsapp' : 'email'
         });
     } catch (error) {
         console.error('Error sending notification:', error);
@@ -47,12 +47,16 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
     try {
-        const data = await request.json();
-        const user = data.email ? await userFinder.run(data.email): null;
+        const { searchParams } = new URL(request.url);
+        const email = searchParams.get('email');
+        
+        if (!email) throw new Error('Email is required');
+
+        const user = await userFinder.run(email);
         
         if (!user) throw new Error('Email not registered');
 
-        if  (user.getIsValid()) {
+        if (user.getIsValid()) {
             const bookRepository = new InMemoryBookRepository();
             const bookSearcher = new BookSearcher(bookRepository, userFinder);
             const books = await bookSearcher.run(user.getEmail());

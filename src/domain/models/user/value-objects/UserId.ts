@@ -1,19 +1,29 @@
 export class UserId {
-  constructor(private readonly value: string) {
-    if (!value || value.trim().length === 0) {
-      throw new Error("User ID cannot be empty");
-    }
-  }
+  private constructor(private readonly value: number) {}
 
-  public static create(value: string): UserId {
+  public static create(value: number): UserId {
+    if (value === undefined || value === null) {
+      throw new Error('User ID is required');
+    }
+    if (typeof value !== 'number') {
+      throw new Error('User ID must be a number');
+    }
+    if (value <= 0) {
+      throw new Error('User ID must be a positive number');
+    }
+
     return new UserId(value);
   }
 
-  public toString(): string {
+  public toNumber(): number {
     return this.value;
   }
 
+  public toString(): string {
+    return this.value.toString();
+  }
+
   public equals(other: UserId): boolean {
-    return this.value === other.toString();
+    return this.value === other.toNumber();
   }
 }
