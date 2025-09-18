@@ -1,0 +1,15 @@
+meta {
+  name: notificationSend
+  type: http
+  seq: 1
+}
+
+post {
+  url: http://localhost:3000/api/notifications/send
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+}

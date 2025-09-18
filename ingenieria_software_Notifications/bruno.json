@@ -1,0 +1,9 @@
+{
+  "version": "1",
+  "name": "ingenieria_software_Notifications",
+  "type": "collection",
+  "ignore": [
+    "node_modules",
+    ".git"
+  ]
+}
