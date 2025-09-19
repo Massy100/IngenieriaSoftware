@@ -52,9 +52,8 @@ export async function GET(request: Request) {
         const email = searchParams.get('email');
         
         if (!email) {
-            return NextResponse.json({
-                message: 'Email parameter is required'
-            }, { status: 400 });
+            let all = await userRepository.getAll();
+            return NextResponse.json(all);
         }
 
         const user = await userFinder.run(email);
