@@ -73,12 +73,12 @@ export default class SupabaseUserRepository implements UserRepository {
         try{
             const result = await this.sql`SELECT * FROM users`;
             return result.map(row => new User(
-                UserId.create(row.id),
+                UserId.create(parseInt(row.id)),
                 UserEmail.create(row.email),
                 UserDpi.create(row.dpi),
                 UserName.create(row.name),
                 UserAge.create(row.age),
-                UserIsValid.create(row.isValid),
+                UserIsValid.create(Boolean(row.is_valid)),
                 UserPhone.create(row.phone),
             ));
         } catch (error) {
@@ -92,12 +92,12 @@ export default class SupabaseUserRepository implements UserRepository {
             const result = await this.sql`SELECT * FROM users WHERE id = ${id}`;
             if (result.length) {
                 return new User(
-                    UserId.create(result[0].id),
+                    UserId.create(parseInt(result[0].id)),
                     UserEmail.create(result[0].email),
                     UserDpi.create(result[0].dpi),
                     UserName.create(result[0].name),
                     UserAge.create(result[0].age),
-                    UserIsValid.create(result[0].isValid),
+                    UserIsValid.create(Boolean(result[0].is_valid)),
                     UserPhone.create(result[0].phone)
                 );
             }
@@ -113,12 +113,12 @@ export default class SupabaseUserRepository implements UserRepository {
             const result = await this.sql`SELECT * FROM users WHERE email = ${email}`;
             if (result.length) {
                 return new User(
-                    UserId.create(result[0].id),
+                    UserId.create(parseInt(result[0].id)),
                     UserEmail.create(result[0].email),
                     UserDpi.create(result[0].dpi),
                     UserName.create(result[0].name),
                     UserAge.create(result[0].age),
-                    UserIsValid.create(result[0].isValid),
+                    UserIsValid.create(result[0].is_valid),
                     UserPhone.create(result[0].phone)
                 );
             }
