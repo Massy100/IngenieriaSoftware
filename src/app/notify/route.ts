@@ -26,10 +26,17 @@ export async function POST(request: NextRequest) {
         const user = data.email ? await userFinder.run(data.email): null;
         if (!user) throw new Error('Email not registered');
 
-        userRepository.update(user.getId(), undefined, undefined, undefined, undefined, true, undefined);
+        await userRepository.update(
+            user.getId(),
+            undefined,
+            undefined, 
+            undefined, 
+            undefined, 
+            true, 
+            undefined);
 
         if (data.wa) {
-            await WhatsappNotificationSender.send(user); 
+            await new WhatsappNotificationSender().send(user); 
         } else {
             await new EmailNotificationSender().send(user);
         }
