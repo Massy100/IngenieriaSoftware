@@ -11,8 +11,8 @@ export class WhatsappNotificationSender implements NotificationSender {
   private client;
   
   constructor() {
-    const accountSid = process.env.TWILIO_ACCOUNT_SID || "AC7dfcdd5f1ed7926a207f641d22b441f6";
-    const authToken = process.env.TWILIO_AUTH_TOKEN || "32176ad071864abc830f24236aa049f4";
+    const accountSid = process.env.TWILIO_ACCOUNT_SID ;
+    const authToken = process.env.TWILIO_AUTH_TOKEN ;
     this.client = twilio(accountSid, authToken);
     console.log("WhatsappNotificationSender initialized");
   }
