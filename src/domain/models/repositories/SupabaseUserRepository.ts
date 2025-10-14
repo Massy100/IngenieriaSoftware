@@ -38,7 +38,7 @@ export default class SupabaseUserRepository implements UserRepository {
                 dpi: user.getDpi(),       
                 name: user.getName(),      
                 age: user.getAge(),        
-                isValid: user.getIsValid(), 
+                is_valid: user.getIsValid(), 
                 phone: user.getPhone()       
             };
 
