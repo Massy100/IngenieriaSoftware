@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
         if (data.wa) {
             await WhatsappNotificationSender.send(user); 
         } else {
-            await EmailNotificationSender.send(user);
+            await new EmailNotificationSender().send(user);
         }
 
         return NextResponse.json({
