@@ -1,5 +1,3 @@
-// src/domain/models/use-cases/notification/SendNotificationUseCase.ts
-
 import { UserFinder } from "../../services/UserFinder";
 import SupabaseUserRepository from "../../repositories/SupabaseUserRepository";
 import { EmailNotificationSender } from "../../notification/EmailNotificationSender";

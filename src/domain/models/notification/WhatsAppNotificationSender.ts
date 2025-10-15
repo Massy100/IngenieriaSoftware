@@ -21,27 +21,13 @@ export class WhatsappNotificationSender implements NotificationSender {
       const message = await this.client.messages.create({
         from: "whatsapp:+14155238886",
         to: `whatsapp:+502${user.getPhone()}`,
-        body: `Bienvenido ${user.getName()}!\n\nTu cuenta ha sido validada exitosamente.\n\nAhora tienes acces a las funciones de la aplicación.`,
+        body: `Welcome ${user.getName()}!\n\nYour account has been succesfully validated.\n\nNow you have full access to the app features.`,
       });
 
-      console.log(`Mensaje enviado a ${user.getName()} (+502${user.getPhone()})`);
+      console.log(`Message sended to ${user.getName()} (+502${user.getPhone()})`);
       console.log(`SID: ${message.sid}`);
     } catch (error) {
-      console.error("Error al enviar el mensaje de WhatsApp con Twilio:", error);
+      console.error("Failed to send the message with Twilio:", error);
     }
-  }
-
-
-  public static async send(user: User): Promise<void> {
-    console.log(`Sending WhatsApp notification to: ${user.getPhone()}`);
-    console.log(`User: ${user.getName()} (ID: ${user.getId()})`);
-    
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        
-        console.log("WhatsApp notification 'sent' successfully");
-        resolve();
-      }, 100);
-    });
   }
 }
