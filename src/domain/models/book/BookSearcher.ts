@@ -8,13 +8,19 @@ export class BookSearcher {
     private readonly userFinder: UserFinder
   ) {}
 
-  run(email: string): Book[] {
-    const user = this.userFinder.run(email);
+  async run(email: string): Promise<Book[]> {
+    const user = await this.userFinder.run(email);
 
     if (!user) {
-      throw new Error("Usuario no encontrado");
+      throw new Error("User not found");
     }
 
-    return this.repository.find();
+    const books = await this.repository.find();
+    return books;
+  }
+
+  async runAndConvertToPrimitives(email: string): Promise<any[]> {
+    const books = await this.run(email);
+    return books.map(book => book.toPrimitives());
   }
 }

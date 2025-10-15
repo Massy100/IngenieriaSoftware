@@ -1,30 +1,35 @@
 import { NextRequest, NextResponse } from "next/server";
 
-import { User } from "@/domain/models/user/User";
-import { UserDto } from "@/domain/models/user/UserDto";
-import { UserDtoGenerator } from "@/domain/models/user/UserDtoGenerator";
+// Casos de uso 
+import { SendNotificationUseCase } from "@/domain/models/use-cases/book/SendNotificationUseCase";
+import { ValidateUserUseCase } from "@/domain/models/use-cases/book/ValidateUserUseCase";
+import { GetUserBooksUseCase } from "@/domain/models/use-cases/book/GetUserBooksUseCase";
 
+// Servicios y repositorios
 import SupabaseUserRepository from "@/domain/models/repositories/SupabaseUserRepository";
-import { UserValidator } from "@/domain/models/services/UserValidator";
 import { UserFinder } from "@/domain/models/services/UserFinder";
-
 import { InMemoryBookRepository } from "@/infrastructure/repositories/book/InMemoryBookRepository";
 import { BookSearcher } from "@/domain/models/book/BookSearcher";
-
-import { EmailNotificationSender } from "@/domain/models/notification/EmailNotificationSender";
 import { WhatsappNotificationSender } from "@/domain/models/notification/WhatsAppNotificationSender";
+import { EmailNotificationSender } from "@/domain/models/notification/EmailNotificationSender";
 
+// Inicialización de dependencias
 const userRepository = new SupabaseUserRepository();
 const userFinder = new UserFinder(userRepository);
 
-export async function POST(request: NextRequest) {
+// Handler especializado para enviar notificaciones
+async function handleSendNotification(request: NextRequest): Promise<NextResponse> {
     try {
         const data = await request.json();
 
-        if (!data.email) throw new Error('Email is required'); 
+        if (!data.email) {
+            throw new Error('Email is required');
+        }
 
-        const user = data.email ? await userFinder.run(data.email): null;
-        if (!user) throw new Error('Email not registered');
+        const user = await userFinder.run(data.email);
+        if (!user) {
+            throw new Error('Email not registered');
+        }
 
         await userRepository.update(
             user.getId(),
@@ -45,6 +50,7 @@ export async function POST(request: NextRequest) {
             message: 'Notification sent successfully',
             channel: data.wa ? 'whatsapp' : 'email'
         });
+
     } catch (error) {
         console.error('Error sending notification:', error);
         return NextResponse.json({
@@ -54,29 +60,34 @@ export async function POST(request: NextRequest) {
     }
 }
 
-export async function GET(request: NextRequest) {
+// Handler especializado para validar usuario y obtener libros
+async function handleValidateUserAndGetBooks(request: NextRequest): Promise<NextResponse> {
     try {
         const { searchParams } = new URL(request.url);
         const email = searchParams.get('email');
         
-        if (!email) throw new Error('Email is required');
+        if (!email) {
+            throw new Error('Email is required');
+        }
 
         const user = await userFinder.run(email);
-        
-        if (!user) throw new Error('Email not registered');
+        if (!user) {
+            throw new Error('Email not registered');
+        }
 
-        if (user.getIsValid()) {
-            const bookRepository = new InMemoryBookRepository();
-            const bookSearcher = new BookSearcher(bookRepository, userFinder);
-            const books = await bookSearcher.run(user.getEmail());
-
-            return NextResponse.json({
-                message: 'User is valid',
-                books: books
-            });
-        } else {
+        if (!user.getIsValid()) {
             throw new Error('User is not valid');
         }
+
+        const bookRepository = new InMemoryBookRepository();
+        const bookSearcher = new BookSearcher(bookRepository, userFinder);
+        const books = await bookSearcher.run(user.getEmail());
+
+        return NextResponse.json({
+            message: 'User is valid',
+            books: books
+        });
+
     } catch (error) {
         console.error('Error validating user:', error);
         return NextResponse.json({
@@ -84,4 +95,68 @@ export async function GET(request: NextRequest) {
             error: error instanceof Error ? error.message : 'Unknown error'
         }, { status: 500 });
     }
+}
+
+// Handler especializado para extraer email
+function extractEmailFromRequest(request: NextRequest): string {
+    const { searchParams } = new URL(request.url);
+    const email = searchParams.get('email');
+    
+    if (!email) {
+        throw new Error('Email is required');
+    }
+    
+    return email;
+}
+
+// Handler especializado para validar usuario
+async function validateUser(email: string) {
+    const user = await userFinder.run(email);
+    
+    if (!user) {
+        throw new Error('Email not registered');
+    }
+    
+    if (!user.getIsValid()) {
+        throw new Error('User is not valid');
+    }
+    
+    return user;
+}
+
+// Handler especializado para obtener libros de usuario
+async function getUserBooks(userEmail: string) {
+    const bookRepository = new InMemoryBookRepository();
+    const bookSearcher = new BookSearcher(bookRepository, userFinder);
+    return await bookSearcher.run(userEmail);
+}
+
+// Handler principal para GET 
+async function handleGetRequestRefactored(request: NextRequest): Promise<NextResponse> {
+    try {
+        const email = extractEmailFromRequest(request);
+        const user = await validateUser(email);
+        const books = await getUserBooks(user.getEmail());
+
+        return NextResponse.json({
+            message: 'User is valid',
+            books: books
+        });
+
+    } catch (error) {
+        console.error('Error validating user:', error);
+        return NextResponse.json({
+            message: 'Error validating user',
+            error: error instanceof Error ? error.message : 'Unknown error'
+        }, { status: 500 });
+    }
+}
+
+// Exportaciones principales, Responsabilidad: solo delegación
+export async function POST(request: NextRequest): Promise<NextResponse> {
+    return await handleSendNotification(request);
+}
+
+export async function GET(request: NextRequest): Promise<NextResponse> {
+    return await handleGetRequestRefactored(request);
 }
